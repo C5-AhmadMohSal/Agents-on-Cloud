@@ -1,7 +1,5 @@
--- DROP DATABASE E_Store ; 
-
+DROP DATABASE E1_Store ; 
 CREATE DATABASE E1_Store ; 
-
 USE E1_Store;
 
 
@@ -31,7 +29,8 @@ CREATE TABLE products(
 CREATE TABLE cart(
     id INT AUTO_INCREMENT NOT NULL , 
     user_id INT , 
-    product_id INT , 
+    product_id INT ,
+     quantityInCart INT DEFAULT 1, 
     FOREIGN KEY (user_id) REFERENCES users(id) ,
     FOREIGN KEY (product_id) REFERENCES products(id) ,
     PRIMARY KEY (id),
