@@ -138,9 +138,60 @@ const updateProductById = (req, res) => {
     });
   };
 
+  const getAllProductByUserId = (req, res) => {
+    const user_id = req.token.userId;
+    // const query = `select * FROM products WHERE user_id=? AND products.is_deleted=0` ;
+    const query = `SELECT * FROM products WHERE products.user_id=? AND favorites.is_deleted=0`;
+    const data = [user_id];
+
+    connection.query(query,data, (err, result) => {
+      if (err) {
+        return res.status(500).json({
+          success: false,
+          massage: "server error",
+          err: err,
+        });
+      }
+      res.status(200).json({
+        success: true,
+        massage: `All products for the user with the id =>${id}`,
+        result: result,
+      });
+    });
+  };
+
+  const getOneProductById = (req, res) => {
+    const id = req.params.id;
+    const query = `SELECT * FROM products WHERE products.is_deleted=0 AND products.id=?`;
+    const data = [id];
+  
+    connection.query(query, data, (err, result) => {
+      if (err) {
+       return res.status(500).json({
+          success: false,
+          massage: "Server Error",
+          err: err,
+        });
+      }
+      if (!result.length) {
+        return  res.status(404).json({
+          success: false,
+          massage: "The product is Not Found",
+        });
+      }
+      res.status(200).json({
+        success: true,
+        massage: `The product of this  ${id}`,
+        result: result,
+      });
+    });
+  };
+
 module.exports = {
   CreateNewProduct,
   getAllProduct,
   DeleteProductById,
   updateProductById,
+  getAllProductByUserId,
+  getOneProductById,
   };
