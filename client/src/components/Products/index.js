@@ -19,7 +19,7 @@ const Products = () => {
         .get(`http://localhost:5000/Products/getAllProduct`)
   
         .then((result) => {
-          console.log(result, "alltheProducts");
+          // console.log(result, "alltheProducts");
           setProducts(result.data.result);
         })
         .catch((err) => {
