@@ -4,7 +4,7 @@
 const connection = require("../models/db");
 
 const CreateNewProduct = (req, res) => {
-    const user_id = req.token.userId;
+    const id = req.token.userId;
   const img = `https://m.media-amazon.com/images/I/61zanx+VVkL._SX522_.jpg`;
   const { title, description, productImage, price } = req.body;
   const query = `INSERT INTO products (
@@ -14,7 +14,7 @@ const CreateNewProduct = (req, res) => {
               price,
               user_id)
                VALUES (?,?,?,?,?);`;
-  const data = [title, description, productImage || img, price,user_id];
+  const data = [title, description, productImage || img, price,id];
 
   connection.query(query, data, (err, result) => {
     if (err) {
@@ -32,6 +32,115 @@ const CreateNewProduct = (req, res) => {
   });
 };
 
+const getAllProduct = (req, res) => {
+  const query = "select * FROM products WHERE products.is_deleted=0" ;
+  connection.query(query, (err, result) => {
+    if (err) {
+      return res.status(500).json({
+        success: false,
+        massage: "server error",
+        err: err,
+      });
+    }
+ 
+    res.status(200).json({
+      success: true,
+      massage: "All products",
+      result: result,
+    });
+  });
+};
+
+
+const DeleteProductById = (req, res) => {
+  const id = req.params.id;
+  const query = `UPDATE products SET is_deleted=1 WHERE id=?;`;
+  const data = [id];
+  connection.query(query, data, (err, result) => {
+    if (err) {
+      return res.status(500).json({
+        success: false,
+        massage: "Server Error",
+        err: err,
+      });
+    }
+    if (!result.changedRows) {
+      return res.status(404).json({
+        success: false,
+        massage: `The product: ${id} is not found`,
+        err: err,
+      });
+    }
+    res.status(200).json({
+      success: true,
+      massage: `Succeeded to delete product with id: ${id}`,
+      result: result,
+    });
+  });
+};
+
+const updateProductById = (req, res) => {
+    const {
+      title,
+      description,
+      productImage,
+      price,
+    } = req.body;
+    const id = req.params.id;
+    const istitle = title ? true : false;
+    const isdescription = description ? true : false;
+    const isproductImage = productImage ? true : false;
+    const isprice = price ? true : false;
+
+
+    const query = `UPDATE products SET 
+    title=IF(${istitle},?,title),
+    description=IF(${isdescription},?,description),
+    productImage=IF(${isproductImage},?,productImage),
+    price=IF(${isprice},?,price)
+    WHERE id=? AND is_deleted=0 ;`;
+    const data = [
+      title,
+      description,
+      productImage,
+      price,
+      id,
+    ];
+
+    connection.query(query, data, (err, result) => {
+      if (err) {
+        return res.status(500).json({
+          success: false,
+          massage: "server err",
+          err: err,
+        });
+      }
+      if (!result) {
+        return res.status(404).json({
+          success: false,
+          massage: `there is no  product whith id: ${id} `,
+          err: err,
+        });
+      }
+      if (!result.changedRows) {
+        return res.status(404).json({
+          success: false,
+          massage: `there is no changes to the product id: ${id} `,
+          err: err,
+        });
+      }
+
+      res.status(200).json({
+        success: true,
+        massage: `Succeeded to update product with id: ${id}`,
+        result: result,
+      });
+    });
+  };
+
 module.exports = {
   CreateNewProduct,
+  getAllProduct,
+  DeleteProductById,
+  updateProductById,
   };
