@@ -16,7 +16,7 @@ const productsRouter=require("./routes/products");
 //.use
 app.use("/register", registerRouter);
 app.use("/login", loginRouter);
-app.use("/products",registerRouter);
+app.use("/products",productsRouter);
 
 
 
