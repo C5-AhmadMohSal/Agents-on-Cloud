@@ -21,7 +21,6 @@ const login = (req, res) => {
         if (passCompare) {
           const payload = {
             userId: result[0].id,
-            role: result[0].role_id,
           };
           const options = { expiresIn: "180m" };
 
@@ -33,7 +32,6 @@ const login = (req, res) => {
             message: "Login Successful",
             token: token,
             userId: result[0].id,
-            role_id: result[0].role_id,
           });
         } else {
           return res.status(403).json({
